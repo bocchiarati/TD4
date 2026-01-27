@@ -1,11 +1,36 @@
-<script setup></script>
+<script setup>
+</script>
 
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+  <div class="home-container">
+    <h1>Accueil</h1>
+    <div class="button-group">
+      <button>Mon profil</button>
+      <button>Nouvelle partie</button>
+      <button>Rejoindre une partie</button>
+    </div>
+  </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.home-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  gap: 2rem;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+</style>
