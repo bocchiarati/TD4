@@ -1,6 +1,10 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { RouteNames } from '@/router/constants'
 import api from '@/api/index'
+
+const router = useRouter()
 
 const name = ref('')
 const email = ref('')
@@ -48,6 +52,7 @@ onMounted(() => {
 
 <template>
   <div class="profile-container">
+    <router-link :to="{ name: RouteNames.HOME }" class="close-button">×</router-link>
     <h1>Mon Profil</h1>
 
     <div v-if="loading" class="loading">Chargement...</div>
@@ -73,12 +78,24 @@ onMounted(() => {
 
 <style scoped>
 .profile-container {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100vh;
   gap: 2rem;
+}
+
+.close-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 2.5rem;
+  color: #333;
+  text-decoration: none;
+  cursor: pointer;
+  line-height: 1;
 }
 
 .form-container {
