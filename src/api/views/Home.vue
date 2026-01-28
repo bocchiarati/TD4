@@ -21,9 +21,15 @@ const goToJoinGame = () => {
   <div class="home-container">
     <h1>Accueil</h1>
     <div class="button-group">
-      <button @click="goToProfile">Mon profil</button>
-      <button @click="goToNewGame">Nouvelle partie</button>
-      <button @click="goToJoinGame">Rejoindre une partie</button>
+      <button @click="goToProfile">
+        Mon profil
+      </button>
+      <button @click="goToNewGame">
+        Nouvelle partie
+      </button>
+      <button @click="goToJoinGame">
+        Rejoindre une partie
+      </button>
     </div>
   </div>
 </template>
