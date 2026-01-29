@@ -39,11 +39,13 @@ const waitForOpponentMove = () => {
 
   socket.value.onopen = () => {
     console.log('WebSocket connected')
-    socket.value.send(JSON.stringify({
-      action: 'connect',
-      game_id: game.value.id,
-      player_id: currentUser.value.id
-    }))
+    if (game.value && currentUser.value) {
+        socket.value.send(JSON.stringify({
+          action: 'connect',
+          game_id: game.value.id,
+          player_id: currentUser.value.id
+        }))
+    }
   }
 
   socket.value.onmessage = (event) => {
@@ -71,8 +73,8 @@ const waitForOpponentMove = () => {
 const play = async (row, col) => {
   playError.value = null
 
-  if (game.value.status === 'finished') return
-  if (game.value.next_player.id !== currentUser.value.id) {
+  if (game.value?.game_status === 'finished') return
+  if (game.value?.next_player_id !== currentUser.value?.id) {
       playError.value = "Ce n'est pas votre tour !"
       return
   }
@@ -92,17 +94,15 @@ const play = async (row, col) => {
 
 const getOpponentName = () => {
     if (!game.value || !game.value.opponent) return 'Adversaire'
-    // Si l'utilisateur courant est le créateur, l'adversaire est game.opponent
-    if (currentUser.value.id === game.value.owner.id) {
+    if (currentUser.value?.id === game.value.owner?.id) {
         return game.value.opponent.name
     }
-    // Si l'utilisateur courant est l'adversaire, alors "l'adversaire" est le créateur (owner)
-    return game.value.owner.name
+    return game.value.owner?.name || 'Adversaire'
 }
 
 const getSymbol = (playerId) => {
     if (!playerId) return ''
-    if (playerId === game.value.owner.id) return 'X'
+    if (playerId === game.value?.owner?.id) return 'X'
     return 'O'
 }
 
@@ -141,7 +141,7 @@ onUnmounted(() => {
         <h2>Partie terminée !</h2>
         <p v-if="game.winner_id">
             Le gagnant est :
-            <strong>{{ game.winner_id === currentUser.id ? 'Vous !' : getOpponentName() }}</strong>
+            <strong>{{ game.winner_id === currentUser?.id ? 'Vous !' : getOpponentName() }}</strong>
         </p>
         <p v-else>Match nul !</p>
         <button @click="goHome" class="home-btn">Retour à l'accueil</button>
@@ -150,13 +150,13 @@ onUnmounted(() => {
       <!-- État : En cours -->
       <div v-else>
         <p>Adversaire : {{ getOpponentName() }}</p>
-        <p>C'est au tour de : {{ game.next_player.id === currentUser.id ? 'Vous' : getOpponentName() }}</p>
+        <p>C'est au tour de : {{ game.next_player_id === currentUser?.id ? 'Vous' : getOpponentName() }}</p>
 
         <div class="grid">
           <template v-for="row in 3" :key="'row-'+row">
               <div v-for="col in 3" :key="'col-'+col" class="cell"
                 @click="play(row, col)">
-                <span v-if="game.grid[row-1][col-1]">
+                <span v-if="game.grid && game.grid[row-1] && game.grid[row-1][col-1]">
                     {{ getSymbol(game.grid[row-1][col-1]) }}
                 </span>
               </div>
