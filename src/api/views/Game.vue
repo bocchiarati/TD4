@@ -79,7 +79,15 @@ const play = async (row, col) => {
       return
   }
 
+  // Vérification si la case est déjà jouée
+  const cellKey = `r${row}c${col}`
+  if (game.value[cellKey] !== null) {
+      playError.value = "Cette case est déjà occupée !"
+      return
+  }
+
   try {
+    // L'API attend row et col (probablement 1-based vu les clés r1c1)
     const response = await api.patch(`/api/games/${game.value.id}/play/${row}/${col}`)
     game.value = response.data
   } catch (err) {
@@ -100,9 +108,15 @@ const getOpponentName = () => {
     return game.value.owner?.name || 'Adversaire'
 }
 
-const getSymbol = (playerId) => {
-    if (!playerId) return ''
-    if (playerId === game.value?.owner?.id) return 'X'
+const getCaseStatus = (row, col) => {
+    if (!game.value) return ''
+
+    const key = `r${row}c${col}`
+    const caseID = game.value[key]
+
+    if (!caseID) return ''
+
+    if (caseID === 1) return 'X'
     return 'O'
 }
 
@@ -137,7 +151,7 @@ onUnmounted(() => {
       </div>
 
       <!-- État : Partie terminée -->
-      <div v-else-if="game.game_status === 'finished'" class="game-over">
+      <div v-else-if="game.state === 2" class="game-over">
         <h2>Partie terminée !</h2>
         <p v-if="game.winner_id">
             Le gagnant est :
@@ -153,11 +167,12 @@ onUnmounted(() => {
         <p>C'est au tour de : {{ game.next_player_id === currentUser?.id ? 'Vous' : getOpponentName() }}</p>
 
         <div class="grid">
+          <!-- Boucles 1 à 3 pour correspondre aux clés r1c1...r3c3 -->
           <template v-for="row in 3" :key="'row-'+row">
               <div v-for="col in 3" :key="'col-'+col" class="cell"
                 @click="play(row, col)">
-                <span v-if="game.grid && game.grid[row-1] && game.grid[row-1][col-1]">
-                    {{ getSymbol(game.grid[row-1][col-1]) }}
+                <span>
+                    {{ getCaseStatus(row, col) }}
                 </span>
               </div>
           </template>
