@@ -83,8 +83,8 @@ onUnmounted(() => {
       </div>
 
       <div v-else>
-        <p>Adversaire : {{ game.opponent.name !== currentUser.name ? game.opponent.name : game.owner.name }}</p>
-        <p>C'est au tour de : {{ game.next_player_id === currentUser.id ? 'Vous' : game.opponent.name }}</p>
+        <p>Adversaire : {{ game.opponent.id !== currentUser.id ? game.opponent.name : game.owner.name }}</p>
+        <p>C'est au tour de : {{ game.next_player.id === currentUser.id ? 'Vous' : (game.opponent.id !== currentUser.id ? game.opponent.name : game.owner.name) }}</p>
 
         <div class="grid">
           <div v-for="(cell, index) in 9" :key="index" class="cell">
