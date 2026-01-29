@@ -9,19 +9,18 @@ const router = useRouter()
 const name = ref('')
 const email = ref('')
 const loading = ref(false)
-const error = ref(null)
+const errors = ref([])
 const successMessage = ref(null)
 
 const fetchProfile = async () => {
   loading.value = true
-  error.value = null
+  errors.value = []
   try {
     const response = await api.get('/api/profile')
     name.value = response.data.name
     email.value = response.data.email
   } catch (err) {
-    error.value = "Erreur lors du chargement du profil."
-    console.error(err)
+    errors.value = ["Erreur lors du chargement du profil."]
   } finally {
     loading.value = false
   }
@@ -29,7 +28,7 @@ const fetchProfile = async () => {
 
 const updateProfile = async () => {
   loading.value = true
-  error.value = null
+  errors.value = []
   successMessage.value = null
   try {
     await api.put('/api/profile', {
@@ -38,8 +37,13 @@ const updateProfile = async () => {
     })
     successMessage.value = "Profil mis à jour avec succès !"
   } catch (err) {
-    error.value = "Erreur lors de la mise à jour du profil."
-    console.error(err)
+    if (err.response.data.errors) {
+      errors.value = Object.values(err.response.data.errors).flat()
+    } else if (err.response.data.message) {
+       errors.value = [err.response.data.message]
+    } else {
+      errors.value = ["Erreur lors de la mise à jour du profil."]
+    }
   } finally {
     loading.value = false
   }
@@ -58,7 +62,11 @@ onMounted(() => {
     <div v-if="loading" class="loading">Chargement...</div>
 
     <div v-else class="form-container">
-      <div v-if="error" class="error">{{ error }}</div>
+      <div v-if="errors.length" class="error-container">
+        <ul>
+          <li v-for="(error, index) in errors" :key="index" class="error">{{ error }}</li>
+        </ul>
+      </div>
       <div v-if="successMessage" class="success">{{ successMessage }}</div>
 
       <div class="form-group">
@@ -123,8 +131,15 @@ button {
   cursor: pointer;
 }
 
+.error-container ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
 .error {
   color: red;
+  font-size: 0.9rem;
 }
 
 .success {
