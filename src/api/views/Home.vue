@@ -1,20 +1,26 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { RouteNames } from '@/router/constants'
+import api from "@/api/index.js";
 
 const router = useRouter()
-
 const goToProfile = () => {
   router.push({ name: RouteNames.PROFILE })
 }
-
-const goToNewGame = () => {
-  router.push({ name: RouteNames.NEW_GAME })
-}
-
 const goToJoinGame = () => {
   router.push({ name: RouteNames.JOIN_GAME })
 }
+
+const createGame = async () => {
+  try {
+    const response = await api.post('/api/games')
+    if (response.data.id) {
+      router.push({ name: RouteNames.GAME, params: { id: response.data.id } })
+    }
+  } catch (error) {
+    console.error(error)
+  }
+};
 </script>
 
 <template>
@@ -24,7 +30,7 @@ const goToJoinGame = () => {
       <button @click="goToProfile">
         Mon profil
       </button>
-      <button @click="goToNewGame">
+      <button @click="createGame">
         Nouvelle partie
       </button>
       <button @click="goToJoinGame">
