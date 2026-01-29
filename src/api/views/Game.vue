@@ -83,7 +83,7 @@ onUnmounted(() => {
       </div>
 
       <div v-else>
-        <p>Adversaire : {{ game.opponent.name }}</p>
+        <p>Adversaire : {{ game.opponent.name !== currentUser.name ? game.opponent.name : game.owner.name }}</p>
         <p>C'est au tour de : {{ game.next_player_id === currentUser.id ? 'Vous' : game.opponent.name }}</p>
 
         <div class="grid">
